@@ -1,0 +1,8 @@
+modelo\Factura.class
+modelo\FacturaDAO.class
+modelo\Producto.class
+config\Conexion.class
+modelo\ProductoDAO.class
+modelo\DetalleDAO.class
+modelo\DetalleFactura.class
+controlador\Controlador.class
