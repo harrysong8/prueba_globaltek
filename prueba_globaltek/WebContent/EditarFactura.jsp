@@ -23,7 +23,7 @@
 	<div class="d-flex">
 		<div class="col-sm-4" style="margin: 0 auto;">
 			<div class="card"> 				
-				<form action="Controlador?menu=CrearFactura&accion=agregar" method="POST" >
+				<form action="Controlador?menu=EditarFactura&accion=agregar&factura=${Nrofactura}" method="POST" >
 					<div class="card-body">	
 						<div class="form-group">
 							<label>Datos del producto</label>
@@ -54,7 +54,7 @@
 							
 					</div>
 				</form>
-				<form action="Controlador?menu=CrearFactura&accion=generarFactura" method="POST" name="formulario" id="formulario" >
+				<form action="Controlador?menu=EditarFactura&accion=editarFactura&factura=${Nrofactura}" method="POST" name="formulario" id="formulario" >
 					<div class="card-body">
 						<div class="form-group">
 							<label>Datos del cliente</label>
@@ -116,13 +116,13 @@
 						<tbody>
 							<c:forEach var="df" items="${lista_df}" varStatus="loop" >
 								<tr>
-									<td>${df.getItem()}</td>
+									<td>${loop.index + 1}</td>
 									<td>${df.getIdProducto()}</td>
 									<td>${df.getDescripcion()}</td>
 									<td>${df.getPrecio_unitario()}</td>
 									<td>${df.getCantidad()}</td>
 									<td>
-										<a href="Controlador?menu=CrearFactura&accion=eliminarItem&elemento=${loop.index}" class="btn btn-danger">Eliminar</a>
+										<a href="Controlador?menu=EditarFactura&accion=eliminarItem&elemento=${loop.index}&factura=${df.getIdFactura()}" class="btn btn-danger">Eliminar</a>
 									</td>
 								</tr>
 							</c:forEach>					
@@ -131,7 +131,7 @@
 				</div>
 				<div class="card-footer">
 					<div>
-						<a href="#" onclick="validar()" class="btn btn-success">Crear Factura</a>
+						<a href="#" onclick="validar()" class="btn btn-success">Editar Factura</a>
 						<a href="Controlador?menu=inicio&accion=Listar" class="btn btn-danger">Cancelar</a>
 					</div>
 				</div>

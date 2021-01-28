@@ -18,28 +18,22 @@ public class DetalleDAO {
 	int r;
 	
 	public List listar() {
-		String sql = "select * from facturas";
-		List<Factura> lista = new ArrayList<>();
+		String sql = "select * from detalles";
+		List<DetalleFactura> lista = new ArrayList<>();
 		try {
 			con = cn.Conexion();
 			ps = con.prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Factura fc = new Factura();
-				fc.setIdFactura(rs.getInt(1));
-				fc.setNumeroFactura(rs.getInt(2));
-				fc.setFecha(rs.getDate(3));
-				fc.setTipodePago(rs.getString(4));
-				fc.setDocumentoCliente(rs.getInt(5));
-				fc.setNombreCliente(rs.getString(6));
-				fc.setSubtotal(rs.getDouble(7));
-				fc.setDescuento(rs.getDouble(8));
-				fc.setIva(rs.getDouble(9));
-				fc.setTotalDescuento(rs.getDouble(10));
-				fc.setTotalImpuesto(rs.getDouble(11));
-				fc.setTotal(rs.getDouble(12));
-								
-				lista.add(fc);
+				DetalleFactura dfc = new DetalleFactura();
+				dfc.setIdDetalle(rs.getInt(1));
+				dfc.setIdFactura(rs.getInt(2));
+				dfc.setIdProducto(rs.getInt(3));
+				dfc.setCantidad(rs.getInt(4));
+				dfc.setPrecio_unitario(rs.getInt(5));
+				dfc.setDescripcion(rs.getString(6));
+
+				lista.add(dfc);
 			}
 		} catch (Exception e) {
 			
@@ -47,6 +41,33 @@ public class DetalleDAO {
 		return lista;
 	}
 	
+
+	public List listarDetalleFactura(int id) {
+		String sql = "select d.iddetalle, d.idfactura, d.idProducto, d.cantidad, d.precio_unitario, p.producto " + 
+				"from detalles d " + 
+				"inner join Productos p on (d.idProducto = p.idProducto) " + 
+				"where idfactura = "+id;
+		List<DetalleFactura> lista = new ArrayList<>();
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				DetalleFactura dfc = new DetalleFactura();
+				dfc.setIdDetalle(rs.getInt(1));
+				dfc.setIdFactura(rs.getInt(2));
+				dfc.setIdProducto(rs.getInt(3));
+				dfc.setCantidad(rs.getInt(4));
+				dfc.setPrecio_unitario(rs.getInt(5));
+				dfc.setDescripcion(rs.getString(6));
+
+				lista.add(dfc);
+			}
+		} catch (Exception e) {
+			
+		}	
+		return lista;
+	}
 	
 	public int guardarDetalleFactura(DetalleFactura dfc) {
 		String sql = "insert into Detalles (idDetalle, idFactura, idProducto, cantidad, precio_unitario) values (NEXT VALUE FOR detalle_seq, ?, ?, ?, ?)";
@@ -71,7 +92,15 @@ public class DetalleDAO {
 //	public int actualizar() {
 //		
 //	}
-//	public void eliminar(int id) {
-//		
-//	}
+	public void eliminar(int id) {
+		String sql = "delete from Detalles where idFactura="+id;
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);							
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("error guardarDetalleFactura: "+e);
+		}
+	}
 }

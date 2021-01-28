@@ -2,8 +2,10 @@ package modelo;
 
 import java.sql.Connection;
 import java.sql.Date;
+//import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,9 +49,56 @@ public class FacturaDAO {
 		return lista;
 	}
 	
+	public Factura listar(int id) {
+		String sql = "select * from facturas where idFactura = "+id;
+		Factura fc = new Factura();
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				fc.setIdFactura(rs.getInt(1));
+				fc.setNumeroFactura(rs.getInt(2));
+				fc.setFecha(rs.getDate(3));
+				fc.setTipodePago(rs.getString(4));
+				fc.setDocumentoCliente(rs.getInt(5));
+				fc.setNombreCliente(rs.getString(6));
+				fc.setSubtotal(rs.getDouble(7));
+				fc.setDescuento(rs.getDouble(8));
+				fc.setIva(rs.getDouble(9));
+				fc.setTotalDescuento(rs.getDouble(10));
+				fc.setTotalImpuesto(rs.getDouble(11));
+				fc.setTotal(rs.getDouble(12));
+							
+			}
+		} catch (Exception e) {
+			
+		}	
+		return fc;
+	}
+	
 	public String IdFactura() {
 		String idFactura = "";
 		String sql = "select max(idFactura) from Facturas";
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				idFactura = rs.getString(1);
+			}
+		} catch (Exception e) {
+			
+		}
+		if (idFactura == null)
+			return "0";
+		
+		return idFactura;
+	}
+	
+	public String numeroFactura() {
+		String idFactura = "";
+		String sql = "select max(numeroFactura) from Facturas";
 		try {
 			con = cn.Conexion();
 			ps = con.prepareStatement(sql);
@@ -74,7 +123,8 @@ public class FacturaDAO {
 			ps = con.prepareStatement(sql);
 			ps.setInt(1, fc.getIdFactura());
 			ps.setInt(2, fc.getNumeroFactura());
-			ps.setDate(3, fc.getFecha());						
+			java.sql.Date sql_date  = new java.sql.Date( fc.getFecha().getTime() );	
+			ps.setDate(3, sql_date);						
 			ps.setString(4, fc.getTipodePago());
 			ps.setInt(5, fc.getDocumentoCliente());
 			ps.setString(6, fc.getNombreCliente());
@@ -118,10 +168,48 @@ public class FacturaDAO {
 //	public int agregar() {
 //		
 //	}
-//	public int actualizar() {
-//		
-//	}
-//	public void eliminar(int id) {
-//		
-//	}
+
+	public int actualizarFactura(Factura fc) {
+		String sql = "Update facturas  "
+				+ "set numeroFactura = ?, "
+				+ "fecha = ?, "
+				+ "tipodePago = ?, "
+				+ "documentoCliente = ?, "
+				+ "nombreCliente = ?, "
+				+ "descuento = ? "
+				+ "where idFactura = ?";
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, fc.getNumeroFactura());
+			java.sql.Date sql_date  = new java.sql.Date( fc.getFecha().getTime() );	
+			ps.setDate(2, sql_date);		
+			ps.setString(3, fc.getTipodePago());
+			ps.setInt(4, fc.getDocumentoCliente());
+			ps.setString(5, fc.getNombreCliente());
+			ps.setDouble(6, fc.getDescuento());
+			ps.setInt(7, fc.getIdFactura());											
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("error actualizarFactura: "+e);
+		}
+		return r;
+	}
+	
+	public void eliminar(int id) {
+		// para eliminar la factura, se elimina primero el detalle de la factura.
+		DetalleDAO dfcDao = new DetalleDAO();
+		dfcDao.eliminar(id);
+		// posteriormente se elimina la factura
+		String sql = "delete from facturas where idFactura="+id;
+		try {
+			con = cn.Conexion();
+			ps = con.prepareStatement(sql);
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("error ActualizarSaldoFactura: "+e);
+		}
+	}
 }
